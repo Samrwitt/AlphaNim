@@ -219,7 +219,7 @@ def main():
     metrics['move_rows'] = sum(len(game) for game in games)
     (ROOT / 'artifacts/alphazero_metrics.json').write_text(json.dumps(metrics, indent=2))
     with (ROOT / 'data/self_play_moves.csv').open('w', newline='') as file:
-        writer = csv.writer(file)
+        writer = csv.writer(file, lineterminator='\n')
         writer.writerow(['state', 'action', 'win_loss', 'player'])
         writer.writerows(row for game in games for row in game)
     from build_site import build
