@@ -1,4 +1,4 @@
-"""Friday stages 1 and 2: generate and inspect 300 random 10-stone Nim games.
+"""stages 1 and 2: generate and inspect 300 random 10-stone Nim games.
 
 Run: python3 friday/random_nim.py
 Show complete examples: python3 friday/random_nim.py --show games
@@ -94,7 +94,7 @@ def show_rows():
     for row in rows[:23]:
         print(','.join(row))
     print(f'\nCSV contains {len(rows)-1} move rows from 300 complete games.')
-    print('State is BEFORE the move. Players are uppercase A and B.')
+    print('State is BEFORE the move. Players are A and B.')
     print('Outcome: +1 for the final winner, -1 for the final loser.')
 
 
