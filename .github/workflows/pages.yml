@@ -1,0 +1,50 @@
+name: Deploy Nim to GitHub Pages
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - game_template.html
+      - data/random_games.json
+      - .github/workflows/pages.yml
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+concurrency:
+  group: github-pages
+  cancel-in-progress: true
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - uses: actions/checkout@v6
+      - name: Prepare static game
+        run: |
+          python3 - <<'PY'
+          import json
+          from pathlib import Path
+          template = Path('game_template.html').read_text()
+          games = json.loads(Path('data/random_games.json').read_text())
+          destination = Path('_site')
+          destination.mkdir()
+          (destination / 'index.html').write_text(
+              template.replace('__GAMES_JSON__', json.dumps(games)))
+          (destination / '.nojekyll').touch()
+          PY
+      - name: Configure Pages
+        uses: actions/configure-pages@v5
+      - name: Upload static game
+        uses: actions/upload-pages-artifact@v4
+        with:
+          path: _site
+      - name: Deploy
+        id: deployment
+        uses: actions/deploy-pages@v4

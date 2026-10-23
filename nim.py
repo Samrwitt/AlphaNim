@@ -1,14 +1,9 @@
-"""A tiny, inspectable learning lab. Run: python3 nim.py."""
+"""Generate 300 random Nim games, train a neural network, and export an HTML replay."""
 import csv
 import json
-import os
 from pathlib import Path
 
-os.environ.setdefault('MPLCONFIGDIR', '/tmp/nim-matplotlib')
 import numpy as np
-import matplotlib
-matplotlib.use('Agg')
-import matplotlib.pyplot as plt
 
 ROOT = Path(__file__).resolve().parent
 
@@ -71,11 +66,12 @@ class Network:
                      bp=dp.sum(0), wv=h.T @ dv, bv=dv.sum(0))
         return float(loss), grads
 
-    def train(self, states, policies, outcomes, epochs=500, lr=.15):
+    def train(self, states, policies, outcomes, epochs=1000, lr=.15):
         x = encode(states)
+        policies = np.asarray(policies)
         history = []
         for _ in range(epochs):
-            loss, grads = self.gradients(x, np.asarray(policies), outcomes)
+            loss, grads = self.gradients(x, policies, outcomes)
             for name, grad in grads.items():
                 setattr(self, name, getattr(self, name) - lr * grad)
             history.append(loss)
@@ -88,77 +84,6 @@ class Network:
     def save(self, name):
         np.savez(ROOT / 'artifacts' / name,
                  **{k: getattr(self, k) for k in ('w','b','wp','bp','wv','bv')})
-
-
-class Node:
-    def __init__(self, state, net):
-        self.state = state
-        self.n = np.zeros(2)
-        self.total = np.zeros(2)
-        self.children = {}
-        self.prior, self.value = net.predict(state)
-
-
-def search(state, net, rng, simulations=64, explore=False):
-    root = Node(state, net)
-    if explore and state > 1:
-        root.prior = .75 * root.prior + .25 * rng.dirichlet([.3, .3])
-
-    def simulate(node):
-        actions = np.array(legal(node.state)) - 1
-        q = node.total / np.maximum(1, node.n)
-        score = q + 1.5 * node.prior * np.sqrt(1 + node.n.sum()) / (1 + node.n)
-        idx = int(actions[np.argmax(score[actions])])
-        remaining = node.state - (idx + 1)
-        if remaining == 0:
-            value = 1.0
-        elif idx not in node.children:
-            child = Node(remaining, net)
-            node.children[idx] = child
-            value = -child.value
-        else:
-            # The child is the opponent's turn: flip the value's sign.
-            value = -simulate(node.children[idx])
-        node.n[idx] += 1
-        node.total[idx] += value
-        return value
-
-    for _ in range(simulations):
-        simulate(root)
-    return root.n / root.n.sum()
-
-
-def self_play(net, rng, count=60):
-    examples = []
-    for _ in range(count):
-        state, turn, trajectory = 10, 0, []
-        while state:
-            pi = search(state, net, rng, explore=True)
-            action = int(rng.choice([1, 2], p=pi))
-            trajectory.append((state, pi, turn))
-            state -= action
-            winner = turn
-            turn = 1-turn
-        examples.extend((s, p, 1 if t == winner else -1) for s, p, t in trajectory)
-    return examples
-
-
-def evaluate(choose, seed=123, count=1000):
-    rng = np.random.default_rng(seed)
-    result = {}
-    for agent_turn in (0, 1):
-        wins = 0
-        for _ in range(count):
-            state, turn = 10, 0
-            while state:
-                action = choose(state) if turn == agent_turn else int(rng.choice(legal(state)))
-                assert action in legal(state)
-                state -= action
-                winner = turn
-                turn = 1-turn
-            wins += winner == agent_turn
-        result['as_a' if agent_turn == 0 else 'as_b'] = wins / count
-    return result
 
 
 def check(games):
@@ -192,16 +117,8 @@ def check(games):
     return error
 
 
-def panel(name, title, body):
-    fig = plt.figure(figsize=(13, 8), facecolor='#101827')
-    fig.text(.05, .92, title, color='#71e0ca', fontsize=22, weight='bold')
-    fig.text(.05, .84, body, color='white', fontsize=13, family='monospace', va='top', linespacing=1.5)
-    fig.savefig(ROOT / 'screenshots' / name, dpi=140, facecolor=fig.get_facecolor())
-    plt.close(fig)
-
-
 def main():
-    for path in ('data', 'artifacts', 'screenshots'):
+    for path in ('data', 'artifacts'):
         (ROOT / path).mkdir(exist_ok=True)
     games = random_games()
     error = check(games)
@@ -211,6 +128,10 @@ def main():
         writer.writerow(['state', 'action', 'win_loss', 'player'])
         writer.writerows(rows)
     (ROOT / 'data/random_games.json').write_text(json.dumps(games, indent=2))
+    # Embed saved games so the HTML opens directly without a server or fetch.
+    template = (ROOT / 'game_template.html').read_text()
+    (ROOT / 'artifacts/game.html').write_text(
+        template.replace('__GAMES_JSON__', json.dumps(games)))
     # Hold out whole games; rows from a single game must stay together.
     order = np.random.default_rng(99).permutation(300)
     train_ids, test_ids = order[:240], order[240:]
@@ -218,60 +139,23 @@ def main():
     train = [r for i in train_ids for r in games[i]]
     test = [r for i in test_ids for r in games[i]]
     net = Network()
-    # Random choices are not expert policy targets. Use winners' actions for
-    # a deliberately simple baseline; every row still trains the value head.
-    # Uniform targets for losing rows avoid pretending their action is expert.
+    # Action targets are the actual random moves; outcomes are unchanged.
+    # This learns the data distribution, not a claim of optimal play.
     def targets(rows):
-        return np.array([np.eye(2)[a-1] if z == 1 else
-                         ([1,0] if s == 1 else [.5,.5]) for s,a,z,p in rows])
-    history = net.train([r[0] for r in train], targets(train), [r[2] for r in train], epochs=1000)
-    test_loss = net.gradients(encode([r[0] for r in test]), targets(test), [r[2] for r in test])[0]
+        return np.array([np.eye(2)[a-1] for s,a,z,p in rows])
+    history = net.train([r[0] for r in train], targets(train),
+                        [r[2] for r in train], epochs=1000)
+    test_loss = net.gradients(encode([r[0] for r in test]), targets(test),
+                              [r[2] for r in test])[0]
     net.save('random_baseline.npz')
-    baseline = evaluate(lambda s: int(np.argmax(net.predict(s)[0])) + 1)
-    print(f'STAGE 1: 300 games, {len(rows)} rows; all trajectories validated.', flush=True)
-    print(f'STAGE 2: handmade gradient maximum error {error:.2e}; test loss {test_loss:.4f}', flush=True)
-    az, rng, az_history, replay = Network(seed=17), np.random.default_rng(2026), [], []
-    for iteration in range(8):
-        replay.extend(self_play(az, rng))
-        replay = replay[-3000:]
-        states, policies, outcomes = zip(*replay)
-        curve = az.train(states, policies, outcomes, epochs=200)
-        az_history.extend(curve)
-        print(f'STAGE 3: self-play round {iteration+1}/8, loss {curve[-1]:.4f}', flush=True)
-    az.save('alphazero_nim.npz')
-    with (ROOT / 'data/self_play_replay.json').open('w') as f:
-        json.dump([{'state':s, 'policy':p.tolist(), 'outcome':z} for s,p,z in replay], f)
-    raw = evaluate(lambda s: int(np.argmax(az.predict(s)[0])) + 1)
-    search_policy = {s:int(np.argmax(search(s, az, rng)))+1 for s in range(1,11)}
-    searched = evaluate(lambda s: search_policy[s])
-    # This mathematical reference is used only AFTER training for assessment.
-    optimal = {s: s % 3 if s % 3 else 1 for s in range(1,11)}
-    metrics = dict(random_games=300, rows=len(rows), train_games=240, test_games=60,
-                   gradient_max_error=error, baseline_test_loss=test_loss,
-                   baseline_vs_random=baseline, alphazero_network_vs_random=raw,
-                   alphazero_search_vs_random=searched, search_actions=search_policy,
-                   optimal_actions=optimal, self_play_games=480)
+    metrics = dict(random_games=300, rows=len(rows), train_games=240,
+                   test_games=60, gradient_max_error=error,
+                   initial_training_loss=history[0],
+                   final_training_loss=history[-1], held_out_loss=test_loss)
     (ROOT / 'artifacts/metrics.json').write_text(json.dumps(metrics, indent=2))
-    sample = []
-    for i, game in enumerate(games[:3], 1):
-        sample.append(f'Game {i} | winner: {game[-1][3].upper()}')
-        sample.append('  ' + ' -> '.join(f'{s}: {p.upper()} takes {a}' for s,a,z,p in game) + ' -> 0')
-        sample.append('')
-    panel('01_sample_games.png', 'Stage 1 | Complete random games', '\n'.join(sample) + f'\n300 games generated | seed 42 | {len(rows)} moves saved\nAll legal moves, alternating turns and terminal outcomes checked.')
-    panel('02_data_rows.png', 'Stage 1 | Actual saved training rows',
-          'state  action  win/loss  player\n' + '\n'.join(f'{s:>5}  {a:>6}  {z:>8}  {p:>6}' for s,a,z,p in rows[:16]) + '\n\nOutcome is assigned AFTER the game, from each mover\'s perspective.')
-    fig, axes = plt.subplots(1, 2, figsize=(12, 5))
-    axes[0].plot(history); axes[0].set_title('Stage 2: random-data baseline')
-    axes[1].plot(az_history); axes[1].set_title('Stage 3: search-guided self-play')
-    for ax in axes:
-        ax.set_xlabel('Manual gradient descent step'); ax.set_ylabel('Policy + value loss'); ax.grid(alpha=.2)
-    fig.tight_layout(); fig.savefig(ROOT / 'screenshots/03_training.png', dpi=150); plt.close(fig)
-    lines = ['Agent vs random opponent (1,000 games per seat)', '', '                         As A       As B']
-    for label, value in [('Random-data network', baseline), ('Self-play network', raw), ('Self-play + search', searched)]:
-        lines.append(f'{label:<25}{value["as_a"]:>6.1%}     {value["as_b"]:>6.1%}')
-    lines += ['', 'Stones     Network+search move     Reference move']
-    lines += [f'{s:>6}     {search_policy[s]:>19}     {optimal[s]:>14}' + (' (forced loss)' if s%3==0 else '') for s in range(1,11)]
-    panel('04_evaluation.png', 'Stage 4 | Measured results', '\n'.join(lines))
+    print(f'STAGE 1: 300 games, {len(rows)} rows; all trajectories validated.', flush=True)
+    print(f'STAGE 2: handwritten gradient maximum error {error:.2e}', flush=True)
+    print(f'STAGE 3: trained on 240 games; checked on 60 held-out games.', flush=True)
     print(json.dumps(metrics, indent=2))
 
 
