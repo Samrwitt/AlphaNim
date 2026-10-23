@@ -1,0 +1,7 @@
+STAGE 1: 300 games, 2066 rows; all trajectories validated.
+STAGE 2: handmade gradient maximum error 2.70e-11; test loss 1.4420
+STAGE 3: self-play round 1/8, loss 0.9237
+STAGE 3: self-play round 2/8, loss 0.7219
+STAGE 3: self-play round 3/8, loss 0.6182
+STAGE 3: self-play round 4/8, loss 0.5950
+STAGE 3: self-play round 5/8, loss 0.5641
