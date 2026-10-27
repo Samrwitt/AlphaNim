@@ -1,10 +1,3 @@
-"""stages 1 and 2: generate and inspect 300 random 10-stone Nim games.
-
-Run: python3 friday/random_nim.py
-Show complete examples: python3 friday/random_nim.py --show games
-Show actual CSV rows: python3 friday/random_nim.py --show rows
-Only Python's standard library is needed. No training is performed here.
-"""
 import argparse
 import csv
 import json
@@ -28,7 +21,6 @@ def generate_games(count=300, seed=42):
             stones -= action
             winner = player
             player = 'B' if player == 'A' else 'A'
-        # Label every move after discovering who took the last stone.
         game = [(state, action, 1 if player == winner else -1, player)
                 for state, action, player in moves]
         games.append(game)
@@ -86,14 +78,14 @@ def show_games(games):
 
 
 def show_rows():
-    # Read the saved CSV back from disk; do not manufacture display examples.
     with (OUTPUT / 'moves.csv').open(newline='') as file:
         rows = list(csv.reader(file))
-    print('ACTUAL SAVED FILE: friday/moves.csv')
+    print(f'ACTUAL SAVED FILE: {OUTPUT.name}/moves.csv')
     print('Columns: (state, action, win_loss, player)\n')
     for row in rows[:23]:
         print(','.join(row))
     print(f'\nCSV contains {len(rows)-1} move rows from 300 complete games.')
+    print(f'Total CSV lines: {len(rows)} = {len(rows)-1} moves + 1 header.')
     print('State is BEFORE the move. Players are A and B.')
     print('Outcome: +1 for the final winner, -1 for the final loser.')
 
@@ -103,7 +95,6 @@ def main():
     parser.add_argument('--show', choices=['games', 'rows'])
     args = parser.parse_args()
     if args.show:
-        # Display the actual previously generated files, without rerunning games.
         games = load_games()
         validate(games)
         show_games(games) if args.show == 'games' else show_rows()
@@ -112,10 +103,10 @@ def main():
     validate(games)
     save(games)
     print('Generated and validated 300 complete random games (seed=42).')
-    print(f'Saved {sum(len(game) for game in games)} moves to friday/moves.csv')
-    print('Saved all 300 complete games to friday/games.json')
+    print(f'Saved {sum(len(game) for game in games)} moves to {OUTPUT.name}/moves.csv')
+    print(f'Saved all 300 complete games to {OUTPUT.name}/games.json')
     print('Checks passed: legal moves, turns, terminal states, outcome labels.')
-    print('Stages 1 and 2 only. No neural-network training performed.')
+ 
 
 
 if __name__ == '__main__':
