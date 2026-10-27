@@ -1,0 +1,462 @@
+{
+  "seed": 7,
+  "iterations": 20,
+  "games_per_iteration": 20,
+  "training_steps_per_iteration": 100,
+  "simulations": 64,
+  "batch_size": 64,
+  "learning_rate": 0.05,
+  "momentum": 0.9,
+  "l2": 0.0001,
+  "replay_capacity": 5000,
+  "metrics": [
+    {
+      "iteration": 1,
+      "replay_rows": 136,
+      "loss_before": 1.8822099135032002,
+      "loss": 0.7782358838118751,
+      "policy_loss": 0.39251049943787303,
+      "value_loss": 0.3830799318575205
+    },
+    {
+      "iteration": 2,
+      "replay_rows": 274,
+      "loss_before": 0.7176009010534294,
+      "loss": 0.6640104157431755,
+      "policy_loss": 0.35758774215898975,
+      "value_loss": 0.30341777840201795
+    },
+    {
+      "iteration": 3,
+      "replay_rows": 412,
+      "loss_before": 0.5877021560695032,
+      "loss": 0.5617419266199506,
+      "policy_loss": 0.32646234982662997,
+      "value_loss": 0.2320457478284626
+    },
+    {
+      "iteration": 4,
+      "replay_rows": 552,
+      "loss_before": 0.5022578166955732,
+      "loss": 0.4958177754895328,
+      "policy_loss": 0.3081103279987888,
+      "value_loss": 0.18422291174921263
+    },
+    {
+      "iteration": 5,
+      "replay_rows": 691,
+      "loss_before": 0.45535099666349826,
+      "loss": 0.45541711382785555,
+      "policy_loss": 0.2954650939255736,
+      "value_loss": 0.15637931460897203
+    },
+    {
+      "iteration": 6,
+      "replay_rows": 830,
+      "loss_before": 0.4353817584840031,
+      "loss": 0.4347580720079785,
+      "policy_loss": 0.2854259634260055,
+      "value_loss": 0.14567392776320096
+    },
+    {
+      "iteration": 7,
+      "replay_rows": 970,
+      "loss_before": 0.4097834058174429,
+      "loss": 0.41001752835733823,
+      "policy_loss": 0.27930354264645996,
+      "value_loss": 0.1269461336044141
+    },
+    {
+      "iteration": 8,
+      "replay_rows": 1110,
+      "loss_before": 0.3897216570759821,
+      "loss": 0.390435105857987,
+      "policy_loss": 0.2736511171358182,
+      "value_loss": 0.11297968091018354
+    },
+    {
+      "iteration": 9,
+      "replay_rows": 1250,
+      "loss_before": 0.37469349537602203,
+      "loss": 0.3729849862038578,
+      "policy_loss": 0.26836003546701215,
+      "value_loss": 0.100722992887439
+    },
+    {
+      "iteration": 10,
+      "replay_rows": 1391,
+      "loss_before": 0.366656144055153,
+      "loss": 0.36640452619607694,
+      "policy_loss": 0.26362608659961184,
+      "value_loss": 0.09882262097222119
+    },
+    {
+      "iteration": 11,
+      "replay_rows": 1531,
+      "loss_before": 0.3540910875812247,
+      "loss": 0.35481454943810387,
+      "policy_loss": 0.26050572113132,
+      "value_loss": 0.09031686887266718
+    },
+    {
+      "iteration": 12,
+      "replay_rows": 1672,
+      "loss_before": 0.3505589790491225,
+      "loss": 0.3500746678250135,
+      "policy_loss": 0.2565511461272987,
+      "value_loss": 0.08953154196692492
+    },
+    {
+      "iteration": 13,
+      "replay_rows": 1812,
+      "loss_before": 0.3411917708388805,
+      "loss": 0.3413634262814368,
+      "policy_loss": 0.25412579376393557,
+      "value_loss": 0.08325114978477635
+    },
+    {
+      "iteration": 14,
+      "replay_rows": 1951,
+      "loss_before": 0.33531786136510733,
+      "loss": 0.3348471516266289,
+      "policy_loss": 0.25145214060801513,
+      "value_loss": 0.07937391465473677
+    },
+    {
+      "iteration": 15,
+      "replay_rows": 2090,
+      "loss_before": 0.33288485832711795,
+      "loss": 0.3329608050846423,
+      "policy_loss": 0.24930190758124454,
+      "value_loss": 0.07963039833576546
+    },
+    {
+      "iteration": 16,
+      "replay_rows": 2230,
+      "loss_before": 0.3264617043745733,
+      "loss": 0.3262415774696471,
+      "policy_loss": 0.24732660265159137,
+      "value_loss": 0.07485387402614113
+    },
+    {
+      "iteration": 17,
+      "replay_rows": 2369,
+      "loss_before": 0.3217633452414653,
+      "loss": 0.32217532392345627,
+      "policy_loss": 0.24572640047883593,
+      "value_loss": 0.07240650549420416
+    },
+    {
+      "iteration": 18,
+      "replay_rows": 2508,
+      "loss_before": 0.31826767042439724,
+      "loss": 0.31826429917231586,
+      "policy_loss": 0.24433293339657114,
+      "value_loss": 0.06984267871628236
+    },
+    {
+      "iteration": 19,
+      "replay_rows": 2648,
+      "loss_before": 0.31351889794658505,
+      "loss": 0.31321295073642547,
+      "policy_loss": 0.2427503465119106,
+      "value_loss": 0.06636470094863889
+    },
+    {
+      "iteration": 20,
+      "replay_rows": 2788,
+      "loss_before": 0.3088451179549662,
+      "loss": 0.3100403836842944,
+      "policy_loss": 0.2426916572382291,
+      "value_loss": 0.06321615646455475
+    }
+  ],
+  "initial_evaluation": {
+    "random": {
+      "games_per_seat": 20,
+      "wins_as_first": 20,
+      "wins_as_second": 18
+    },
+    "optimal": {
+      "games_per_seat": 20,
+      "wins_as_first": 0,
+      "wins_as_second": 0
+    },
+    "states": [
+      {
+        "state": 1,
+        "network_policy": [
+          1.0,
+          0.0
+        ],
+        "value": 0.37298275754456056,
+        "search_action": 1,
+        "visits": [
+          64,
+          0
+        ]
+      },
+      {
+        "state": 2,
+        "network_policy": [
+          0.510820689884474,
+          0.489179310115526
+        ],
+        "value": 0.07501089293230545,
+        "search_action": 2,
+        "visits": [
+          3,
+          61
+        ]
+      },
+      {
+        "state": 3,
+        "network_policy": [
+          0.4783189322926807,
+          0.5216810677073194
+        ],
+        "value": 0.4710344257362303,
+        "search_action": 1,
+        "visits": [
+          38,
+          26
+        ]
+      },
+      {
+        "state": 4,
+        "network_policy": [
+          0.49726199468311494,
+          0.5027380053168851
+        ],
+        "value": 0.19698416057255363,
+        "search_action": 1,
+        "visits": [
+          60,
+          4
+        ]
+      },
+      {
+        "state": 5,
+        "network_policy": [
+          0.5093864961386293,
+          0.4906135038613708
+        ],
+        "value": -0.017850765930076794,
+        "search_action": 2,
+        "visits": [
+          7,
+          57
+        ]
+      },
+      {
+        "state": 6,
+        "network_policy": [
+          0.49069114784878487,
+          0.5093088521512151
+        ],
+        "value": 0.18927720444831422,
+        "search_action": 1,
+        "visits": [
+          35,
+          29
+        ]
+      },
+      {
+        "state": 7,
+        "network_policy": [
+          0.5101159149135981,
+          0.48988408508640185
+        ],
+        "value": 0.21592411206308354,
+        "search_action": 1,
+        "visits": [
+          50,
+          14
+        ]
+      },
+      {
+        "state": 8,
+        "network_policy": [
+          0.5346695862523222,
+          0.46533041374767775
+        ],
+        "value": -0.17728549828984388,
+        "search_action": 1,
+        "visits": [
+          35,
+          29
+        ]
+      },
+      {
+        "state": 9,
+        "network_policy": [
+          0.5210944416476228,
+          0.4789055583523773
+        ],
+        "value": -0.35960094920315294,
+        "search_action": 2,
+        "visits": [
+          29,
+          35
+        ]
+      },
+      {
+        "state": 10,
+        "network_policy": [
+          0.515635170980554,
+          0.484364829019446
+        ],
+        "value": 0.04808822279937538,
+        "search_action": 2,
+        "visits": [
+          30,
+          34
+        ]
+      }
+    ]
+  },
+  "evaluation": {
+    "random": {
+      "games_per_seat": 100,
+      "wins_as_first": 100,
+      "wins_as_second": 96
+    },
+    "optimal": {
+      "games_per_seat": 100,
+      "wins_as_first": 100,
+      "wins_as_second": 0
+    },
+    "states": [
+      {
+        "state": 1,
+        "network_policy": [
+          1.0,
+          0.0
+        ],
+        "value": 0.8095355159772673,
+        "search_action": 1,
+        "visits": [
+          64,
+          0
+        ]
+      },
+      {
+        "state": 2,
+        "network_policy": [
+          0.0011527972936716674,
+          0.9988472027063283
+        ],
+        "value": 0.9902136255368978,
+        "search_action": 2,
+        "visits": [
+          0,
+          64
+        ]
+      },
+      {
+        "state": 3,
+        "network_policy": [
+          0.999553261767476,
+          0.00044673823252394277
+        ],
+        "value": -0.9810003682941681,
+        "search_action": 1,
+        "visits": [
+          62,
+          2
+        ]
+      },
+      {
+        "state": 4,
+        "network_policy": [
+          0.9971622925513959,
+          0.002837707448604215
+        ],
+        "value": 0.9740198212929477,
+        "search_action": 1,
+        "visits": [
+          64,
+          0
+        ]
+      },
+      {
+        "state": 5,
+        "network_policy": [
+          0.004686516248416231,
+          0.9953134837515838
+        ],
+        "value": 0.9880033064405802,
+        "search_action": 2,
+        "visits": [
+          0,
+          64
+        ]
+      },
+      {
+        "state": 6,
+        "network_policy": [
+          0.5824069909199977,
+          0.41759300908000235
+        ],
+        "value": -0.98717812884102,
+        "search_action": 1,
+        "visits": [
+          37,
+          27
+        ]
+      },
+      {
+        "state": 7,
+        "network_policy": [
+          0.9855012015635726,
+          0.014498798436427374
+        ],
+        "value": 0.9530681096310445,
+        "search_action": 1,
+        "visits": [
+          64,
+          0
+        ]
+      },
+      {
+        "state": 8,
+        "network_policy": [
+          0.07222014370159184,
+          0.9277798562984082
+        ],
+        "value": 0.8821358668277063,
+        "search_action": 2,
+        "visits": [
+          0,
+          64
+        ]
+      },
+      {
+        "state": 9,
+        "network_policy": [
+          0.5549943458760519,
+          0.445005654123948
+        ],
+        "value": -0.9554826039954034,
+        "search_action": 1,
+        "visits": [
+          35,
+          29
+        ]
+      },
+      {
+        "state": 10,
+        "network_policy": [
+          0.973010107679953,
+          0.026989892320047035
+        ],
+        "value": 0.8921933137080412,
+        "search_action": 1,
+        "visits": [
+          64,
+          0
+        ]
+      }
+    ]
+  }
+}

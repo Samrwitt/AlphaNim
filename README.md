@@ -1,7 +1,9 @@
 # Ten-stone Nim: data, handwritten training, and calculation viewer
 
 The completed first submission is preserved on branch `stage1-random-games`.
-Development continues on `stage2-training-walkthrough`. No remote push is required.
+The original assignment is preserved on `stage2-training-walkthrough`.
+The `full-alphazero` branch adds policy/value learning, MCTS, and iterative
+self-play. See [AlphaZero instructions](alphazero/README.md). Branches are local.
 
 ## Stage 1: 300 random games
 
